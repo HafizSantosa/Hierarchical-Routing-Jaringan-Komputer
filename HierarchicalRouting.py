@@ -1,4 +1,4 @@
-from collections import deque
+import heapq
 
 graph = {
     '1A': ['1B', '1C'],
@@ -20,38 +20,46 @@ graph = {
     '5E': ['5A', '5D'],
 }
 
-def bfs_shortest_path(graph, start, goal):
+def dijkstra(graph, start, goal):
+    # Priority queue untuk menyimpan node yang akan dieksplorasi
+    queue = [(0, start)]
+    # Dictionary untuk menyimpan jarak terpendek ke setiap node
+    distances = {node: float('inf') for node in graph}
+    distances[start] = 0
+    # Set untuk menyimpan node yang sudah dikunjungi
     visited = set()
-    queue = deque([[start]])  
-    if start == goal:
-        return 0
     
     while queue:
-        path = queue.popleft()
-        node = path[-1]
+        # Ambil node dengan jarak terpendek dari queue
+        current_distance, current_node = heapq.heappop(queue)
         
-        if node not in visited:
-            neighbours = graph[node]
-            
-            for neighbour in neighbours:
-                new_path = list(path)
-                new_path.append(neighbour)
-                queue.append(new_path)
-                
-                if neighbour == goal:
-                    return len(new_path) - 1
-            
-            visited.add(node)
+        if current_node in visited:
+            continue
+        
+        visited.add(current_node)
+        
+        # Jika mencapai tujuan, return jaraknya
+        if current_node == goal:
+            return current_distance
+        
+        # Update jarak ke tetangga-tetangga dari node saat ini
+        for neighbor in graph[current_node]:
+            distance = current_distance + 1  # Setiap edge dianggap memiliki bobot 1
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                heapq.heappush(queue, (distance, neighbor))
     
-    return float('inf') 
+    return float('inf')  # Return infinity jika tidak ada jalur yang ditemukan
 
+# Input dari pengguna
 start_router = input("Masukkan router awal: ")
 goal_router = input("Masukkan router tujuan: ")
 
+# Validasi input
 if start_router not in graph or goal_router not in graph:
     print("Router tidak valid. Pastikan router ada dalam graf.")
 else:
-    hops = bfs_shortest_path(graph, start_router, goal_router)
+    hops = dijkstra(graph, start_router, goal_router)
     if hops == float('inf'):
         print(f"Tidak ada jalur dari {start_router} ke {goal_router}.")
     else:
