@@ -21,16 +21,12 @@ graph = {
 }
 
 def dijkstra(graph, start, goal):
-    # Priority queue untuk menyimpan node yang akan dieksplorasi
     queue = [(0, start)]
-    # Dictionary untuk menyimpan jarak terpendek ke setiap node
     distances = {node: float('inf') for node in graph}
     distances[start] = 0
-    # Set untuk menyimpan node yang sudah dikunjungi
     visited = set()
     
     while queue:
-        # Ambil node dengan jarak terpendek dari queue
         current_distance, current_node = heapq.heappop(queue)
         
         if current_node in visited:
@@ -38,24 +34,20 @@ def dijkstra(graph, start, goal):
         
         visited.add(current_node)
         
-        # Jika mencapai tujuan, return jaraknya
         if current_node == goal:
             return current_distance
         
-        # Update jarak ke tetangga-tetangga dari node saat ini
         for neighbor in graph[current_node]:
-            distance = current_distance + 1  # Setiap edge dianggap memiliki bobot 1
+            distance = current_distance + 1  
             if distance < distances[neighbor]:
                 distances[neighbor] = distance
                 heapq.heappush(queue, (distance, neighbor))
     
-    return float('inf')  # Return infinity jika tidak ada jalur yang ditemukan
+    return float('inf') 
 
-# Input dari pengguna
 start_router = input("Masukkan router awal: ")
 goal_router = input("Masukkan router tujuan: ")
 
-# Validasi input
 if start_router not in graph or goal_router not in graph:
     print("Router tidak valid. Pastikan router ada dalam graf.")
 else:
